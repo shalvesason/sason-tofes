@@ -97,7 +97,7 @@ button:disabled{opacity:.6;cursor:default}
 .after .hint{font-size:13px;color:var(--mut);text-align:center}
 .priv{font-size:12.5px;color:var(--mut);margin-top:8px}
 #sumWrap{position:fixed;inset-inline-start:-10000px;top:0}
-.abtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.abtns{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 .ab{display:block;text-align:center;padding:10px 6px;border:1px solid #c3cad8;border-radius:12px;text-decoration:none;color:inherit;
   background:#fff;font-size:14px}
 .ab.sm{font-size:13px;padding:8px;color:var(--mut)}
@@ -542,17 +542,17 @@ button:disabled{opacity:.6;cursor:default}
       <button type="button" onclick="document.getElementById('photoIn').click()">📷 הוסף תמונות</button></div>
     <div class="photos" id="photos"></div></details><details class="sec" open><summary><span class="ic">✍️</span>הצהרה</summary>
     <label class="decl"><input type="checkbox" id="decl"><span>הריני מצהיר/ה כי כל הפרטים שמסרתי נכונים ומדויקים, וכי לא העלמתי כל עובדה או פרט בקשר לאירוע. ידוע לי שאין בהודעה זו משום התחייבות של חברת הביטוח להכיר בכיסוי הביטוחי או בגובה תגמולי הביטוח. אני מתחייב/ת להודיע לסוכנות מיד עם קבלת כל הודעה או תביעה בקשר לאירוע הנ״ל, מכל גורם שהוא, ולהעביר את דמי ההשתתפות העצמית על פי תנאי הפוליסה עם קבלת הדרישה. אני מסכים/ה כי הפרטים שמסרתי יוחזקו במאגר מידע ויימסרו למאגרים המשמשים את ענף הביטוח ולכל גורם הנדרש על פי דין, וכן מאשר/ת מסירת נתוני הרכב והנהג ממאגרי משרד התחבורה (שאילתא 03 / טופס 1010, ושאילתת נהג).</span></label></details></form><div class="bar"><div style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%">
-    <button type="button" class="pri" id="sendBtn" onclick="return makeIt(this)">📤 צור טופס ושלח בוואטסאפ</button>
+    <button type="button" class="pri" id="sendBtn" onclick="return makeIt(this)">צור טופס ושלח</button>
     <div class="hint" id="sendHint" style="display:none">וואטסאפ יבקש לבחור למי ⇒ בחר <b>«ששון שמעון ביטוח»</b></div>
     <div class="after" id="after">
       <!-- 14.10 ששון: "הורד — ממש מוריד · פתח — לראות איך יצא · שתף — כל אפליקציה · שלח למשרד". -->
+      <!-- 14.10 ששון: בלי סמלים · "שתף" ירד — היה זהה ל"שלח למשרד". -->
       <div class="abtns">
-        <a class="ab" id="dlLink" download>📥 הורד את הטופס</a>
-        <a class="ab" id="viewLink" target="_blank" rel="noopener">👁️ פתח את הטופס</a>
-        <a class="ab" href="#" onclick="return shareAny()">📤 שתף</a>
+        <a class="ab" id="dlLink" download onclick="return saveIt(event)">הורד את הטופס</a>
+        <a class="ab" id="viewLink" target="_blank" rel="noopener">פתח את הטופס</a>
       </div>
-      <a class="ab sm" id="vcfLink" download="ששון שמעון ביטוח.vcf">📇 שמור את המשרד באנשי קשר</a>
-      <button type="button" id="newBtn" onclick="return newOne()" style="margin-top:4px">🆕 טופס חדש לרכב אחר</button>
+      <a class="ab sm" id="vcfLink" download="ששון שמעון ביטוח.vcf">שמור את המשרד באנשי קשר</a>
+      <button type="button" id="newBtn" onclick="return newOne()" style="margin-top:4px">טופס חדש לרכב אחר</button>
       <div class="hint">פרטי המבוטח / החברה נשארים — כל השאר מתאפס.</div></div>
     <div class="msg" id="msg"></div></div></div><div id="sumWrap"></div><script>
 (function(){
@@ -1877,7 +1877,7 @@ window.makeIt=function(btn){
   if(!window.html2canvas||!window.jspdf){ say('הדף לא נטען עד הסוף — רענן ונסה שוב (מה שמילאת נשמר).'); return false; }
   btn.disabled=true; btn.textContent='יוצר טופס…'; MSG.textContent='';
   var d=collect(); document.getElementById('sumWrap').innerHTML='';
-  if(!window.NP||!NP.sheet){ btn.disabled=false; btn.textContent='📤 צור טופס ושלח בוואטסאפ'; say('הדף לא נטען עד הסוף — רענן ונסה שוב.'); return false; }
+  if(!window.NP||!NP.sheet){ btn.disabled=false; btn.textContent='צור טופס ושלח'; say('הדף לא נטען עד הסוף — רענן ונסה שוב.'); return false; }
   sheetFrame(d).then(function(f){ return toPdf(f,d); }).then(function(blob){
     var name='טופס הודעה - '+(d.ins_name||'לקוח').replace(/[\\/:*?"<>|]/g,'')+'.pdf';
     made={ file:new File([blob],name,{type:'application/pdf'}), text:caption(d) };
@@ -1888,10 +1888,10 @@ window.makeIt=function(btn){
     dl.href=URL.createObjectURL(new Blob([blob],{type:'application/octet-stream'})); dl.setAttribute('download',name);
     made.url=u; document.getElementById('viewLink').href=u;
     document.getElementById('after').classList.add('on');
-    btn.disabled=false; btn.textContent='🟢 שלח למשרד'; btn.classList.add('office');
+    btn.disabled=false; btn.textContent='שלח למשרד'; btn.classList.add('office');
     document.getElementById('sendHint').style.display='block';
     MSG.className='msg'; MSG.textContent='✅ הטופס מוכן.';
-  }).catch(function(){ btn.disabled=false; btn.textContent='📤 צור טופס ושלח בוואטסאפ'; say('לא הצלחנו ליצור את הטופס. נסה שוב.'); });
+  }).catch(function(){ btn.disabled=false; btn.textContent='צור טופס ושלח'; say('לא הצלחנו ליצור את הטופס. נסה שוב.'); });
   return false;
 };
 /* ── שלב 2: שלח (לחיצה טרייה ⇒ חלון השיתוף מותר) ── */
@@ -1910,7 +1910,7 @@ window.newOne=function(){
   var adds=F.querySelectorAll('.addrep'); for(i=0;i<adds.length;i++) adds[i].hidden=false;
   photos=[]; paintPhotos(); document.getElementById('decl').checked=false;
   made=null; document.getElementById('after').classList.remove('on');
-  var sb=document.getElementById('sendBtn'); sb.disabled=false; sb.textContent='📤 צור טופס ושלח בוואטסאפ';
+  var sb=document.getElementById('sendBtn'); sb.disabled=false; sb.textContent='צור טופס ושלח';
   sb.classList.remove('office'); document.getElementById('sendHint').style.display='none';
   MSG.className='msg'; MSG.textContent='🆕 טופס חדש — פרטי המבוטח נשארו. מלא את פרטי הרכב והאירוע.';
   save(); window.scrollTo(0,0);
@@ -1931,12 +1931,15 @@ function shareIt(btn){
   }
   return false;
 }
-/* 📤 "שתף" — אותו חלון שיתוף, לכל אפליקציה (מייל, דרייב…), בלי ההכוונה למשרד. */
-window.shareAny=function(){
-  if(!made) return false;
-  var files=[made.file].concat(photos);
-  if(navigator.canShare&&navigator.canShare({files:files})) navigator.share({files:files,title:made.file.name}).catch(function(){});
-  else say('הטלפון לא מאפשר שיתוף ישיר — לחץ «הורד את הטופס».');
+/* 📥 "הורד" — ששון באייפון (14.10, פעמיים): "זה רק פותח את המסמך". ספארי באייפון **לא נותן לאתר
+   להוריד קובץ** — גם עם octet-stream הוא מציג. הדרך היחידה שם: חלון השיתוף ⇒ «שמור בקבצים».
+   ⇒ באייפון/אייפד: חלון שיתוף עם הקובץ בלבד; בכל השאר (אנדרואיד, מחשב) — הורדה רגילה. */
+var IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+window.saveIt=function(ev){
+  if(!made||!IOS||!navigator.canShare||!navigator.canShare({files:[made.file]})) return true;
+  if(ev) ev.preventDefault();
+  navigator.share({files:[made.file]}).catch(function(){});
+  MSG.className='msg'; MSG.textContent='בחלון שנפתח — לחץ «שמור בקבצים».';
   return false;
 };
 /* 📇 איש הקשר של המשרד — שיופיע ראשון כשבוחרים למי לשלוח. */
