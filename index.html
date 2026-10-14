@@ -1881,7 +1881,11 @@ window.makeIt=function(btn){
   sheetFrame(d).then(function(f){ return toPdf(f,d); }).then(function(blob){
     var name='טופס הודעה - '+(d.ins_name||'לקוח').replace(/[\\/:*?"<>|]/g,'')+'.pdf';
     made={ file:new File([blob],name,{type:'application/pdf'}), text:caption(d) };
-    var u=URL.createObjectURL(blob), dl=document.getElementById('dlLink'); dl.href=u; dl.setAttribute('download',name);
+    /* 📥 14.10 — ששון באייפון: "להוריד — זה פשוט פותח את המסמך". ספארי ב-iOS **מציג** PDF גם עם download.
+       ⇒ קישור ההורדה מקבל עותק מסוג octet-stream — ספארי שואל "להוריד?" ושומר ב"קבצים".
+       "פתח" נשאר על ה-PDF הרגיל (שם תצוגה היא בדיוק מה שרוצים). */
+    var u=URL.createObjectURL(blob), dl=document.getElementById('dlLink');
+    dl.href=URL.createObjectURL(new Blob([blob],{type:'application/octet-stream'})); dl.setAttribute('download',name);
     made.url=u; document.getElementById('viewLink').href=u;
     document.getElementById('after').classList.add('on');
     btn.disabled=false; btn.textContent='🟢 שלח למשרד'; btn.classList.add('office');
